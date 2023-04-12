@@ -1,0 +1,95 @@
+
+# README
+
+This repository contains the computer code and intermediate data files
+to reproduce the analyses in “Differential Racism in the News: Using
+Semi-Supervised Machine Learning to Distinguish Explicit and Implicit
+Stigmatization of Ethnic and Religious Groups in Journalistic Discourse”
+(Political Communication, doi:
+<https://doi.org/10.1080/10584609.2023.2193146>)
+
+## Raw data not shared
+
+Due to copyright issues, we cannot share several files:
+`../rassmon/all_articles.RData`, `raw_data.RDS`, `sentences_tibble.RDS`,
+`parsed_sentences.RDS`. These files contains scraped media content.
+
+`../rassmon/all_articles.RData` is a datadump from [a previous
+study](https://doi.org/10.1177/19401612211015077) and then we the
+relevant articles from it. And then this find is not used anymore.
+
+``` r
+require(quanteda)
+require(tidyverse)
+load("../rassmon/all_articles.RData")
+
+## Zeit, Süddeutsche, FAZ, BILD, Die Welt, T-Online, Focus, Spiegel, Tagesspiegel, taz
+
+incl_media <- c("t-online", "focus", "spiegel", "tagesspiegel", "taz", "die-welt", "bild", "faz", "sueddeutsche", "zeit")
+
+alle_Artikel %>% filter(from_name %in% incl_media) %>% as_tibble -> incl_articles
+
+incl_articles %>% select(title, from_name, text, pubDate3) %>%
+    mutate(publication = from_name, title = title, content = text, date_published = pubDate3) %>%
+    select(publication, title, content, date_published) %>% mutate("aid" = row_number()) %>%
+    saveRDS("incl_articles.RDS")
+```
+
+The structure of a row of data in `raw_data.RDS`, as output by `dput`,
+looks like this:
+
+``` r
+library(tibble)
+structure(list(publication = "bild", title = "Aue-Stürmer eiskalt - Nazarov jagt Erlers Elfer-Rekord", 
+    content = "Aue schwärmt von seinem Elfer-Helden! Sechsmal verwandelte Dimitrij Nazarov (25) eiskalt vom Punkt - zuletzt doppelt gegen 1860 München (3:0). Jetzt jagt Nazarov einen Uralt-Rekord Aues große Stürmer-Legende Holger Erler (67/418 Pflichtspiele mit 99 Toren) gelang das Kunststück, sieben Strafstöße am Stück zu verwandeln. Das war in der Saison 1980/81 in der DDR-Oberliga. Damals vernaschte Erler Torwart-Ikonen wie Bodo Rudwaleit (BFC), Jürgen Croy (Zwickau) und René Müller (Lok). Erler schwärmt von Nazarov! Er sagt: \"Ich bin stolz auf ihn. Das ist klasse, wie er das macht. Die Torhüter haben es schwer. Nazarov schießt total platziert.\" Aue-Legende Holger Erler (l.) Erler stört es nicht, wenn der gebürtige Kasache seinen Rekord nach 36 Jahren knackt: \"Da habe ich überhaupt nichts dagegen, Hauptsache die Jungs halten die Klasse.\" Die Aue-Legende glaubt fest an den Klassenerhalt. Erler: \"Der neue Trainer hat einen entscheidenden Schachzug gemacht: Er hat mit Samson die Abwehr verstärkt. Diese Veränderung war wichtig.\"", 
+    date_published = structure(17266, class = "Date"), aid = 20L), row.names = c(NA, 
+-1L), class = c("tbl_df", "tbl", "data.frame"))
+```
+
+    ## # A tibble: 1 × 5
+    ##   publication title                                 content date_published   aid
+    ##   <chr>       <chr>                                 <chr>   <date>         <int>
+    ## 1 bild        Aue-Stürmer eiskalt - Nazarov jagt E… "Aue s… 2017-04-10        20
+
+The tokenized version of `raw_data.RDS` is `setences_tibble.RDS`. The
+structure of a row of data in `sentences_tibble.RDS`, as output by
+`dput`, looks like this:
+
+``` r
+structure(list(publication = "bild", title = "Aue-Stürmer eiskalt - Nazarov jagt Erlers Elfer-Rekord", 
+    content = "Aue schwärmt von seinem Elfer-Helden! Sechsmal verwandelte Dimitrij Nazarov (25) eiskalt vom Punkt - zuletzt doppelt gegen 1860 München (3:0). Jetzt jagt Nazarov einen Uralt-Rekord Aues große Stürmer-Legende Holger Erler (67/418 Pflichtspiele mit 99 Toren) gelang das Kunststück, sieben Strafstöße am Stück zu verwandeln. Das war in der Saison 1980/81 in der DDR-Oberliga. Damals vernaschte Erler Torwart-Ikonen wie Bodo Rudwaleit (BFC), Jürgen Croy (Zwickau) und René Müller (Lok). Erler schwärmt von Nazarov! Er sagt: \"Ich bin stolz auf ihn. Das ist klasse, wie er das macht. Die Torhüter haben es schwer. Nazarov schießt total platziert.\" Aue-Legende Holger Erler (l.) Erler stört es nicht, wenn der gebürtige Kasache seinen Rekord nach 36 Jahren knackt: \"Da habe ich überhaupt nichts dagegen, Hauptsache die Jungs halten die Klasse.\" Die Aue-Legende glaubt fest an den Klassenerhalt. Erler: \"Der neue Trainer hat einen entscheidenden Schachzug gemacht: Er hat mit Samson die Abwehr verstärkt. Diese Veränderung war wichtig.\"", 
+    date_published = structure(17266, class = "Date"), aid = 20L, 
+    sentences = list(text1 = c("Aue schwärmt von seinem Elfer-Helden!", 
+    "Sechsmal verwandelte Dimitrij Nazarov (25) eiskalt vom Punkt - zuletzt doppelt gegen 1860 München (3:0).", 
+    "Jetzt jagt Nazarov einen Uralt-Rekord Aues große Stürmer-Legende Holger Erler (67/418 Pflichtspiele mit 99 Toren) gelang das Kunststück, sieben Strafstöße am Stück zu verwandeln.", 
+    "Das war in der Saison 1980/81 in der DDR-Oberliga.", "Damals vernaschte Erler Torwart-Ikonen wie Bodo Rudwaleit (BFC), Jürgen Croy (Zwickau) und René Müller (Lok).", 
+    "Erler schwärmt von Nazarov!", "Er sagt: \"Ich bin stolz auf ihn.", 
+    "Das ist klasse, wie er das macht.", "Die Torhüter haben es schwer.", 
+    "Nazarov schießt total platziert.\"", "Aue-Legende Holger Erler (l.)", 
+    "Erler stört es nicht, wenn der gebürtige Kasache seinen Rekord nach 36 Jahren knackt: \"Da habe ich überhaupt nichts dagegen, Hauptsache die Jungs halten die Klasse.\"", 
+    "Die Aue-Legende glaubt fest an den Klassenerhalt.", "Erler: \"Der neue Trainer hat einen entscheidenden Schachzug gemacht: Er hat mit Samson die Abwehr verstärkt.", 
+    "Diese Veränderung war wichtig.\""))), row.names = c(NA, 
+-1L), class = c("tbl_df", "tbl", "data.frame"))
+```
+
+    ## # A tibble: 1 × 6
+    ##   publication title                       content date_published   aid sentences
+    ##   <chr>       <chr>                       <chr>   <date>         <int> <named l>
+    ## 1 bild        Aue-Stürmer eiskalt - Naza… "Aue s… 2017-04-10        20 <chr>
+
+The parsed version `sentences_tibble.RDS` is `parsed_sentences.RDS`. The
+structure of a row of data in `parsed_sentences.RDS`, as output by
+`dput`, looks like this:
+
+``` r
+structure(list(doc_id = "12", sentence_id = 1L, token_id = 1L, 
+    token = "Erler", pos = "PROPN", head_token_id = 2, dep_rel = "sb", 
+    entity = "PER_B"), row.names = 1L, class = c("spacyr_parsed", 
+"data.frame"))
+```
+
+    ##   doc_id sentence_id token_id token   pos head_token_id dep_rel entity
+    ## 1     12           1        1 Erler PROPN             2      sb  PER_B
+
+Because of these copyright issues, one can’t run `00_prep.R`,
+`01_fcm.R`, `05_sent.R`, `06_parse.R`, `07b_example.R`, `08_explicit.R`.
