@@ -1,6 +1,8 @@
 
 # README
 
+![](fig1.png)
+
 This repository contains the computer code and intermediate data files
 to reproduce the analyses in “Differential Racism in the News: Using
 Semi-Supervised Machine Learning to Distinguish Explicit and Implicit
