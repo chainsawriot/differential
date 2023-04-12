@@ -3,7 +3,7 @@ require(LSX)
 require(tidyverse)
 require(quanteda)
 
-parsed_sentences_dfm <- readRDS("parsed_sentences_dfm.RDS")
+parsed_sentences_dfm <- readRDS(here::here("data", "parsed_sentences_dfm.RDS"))
 
 fear_words <- readRDS("fear_words.RDS")
 admiration_words <- readRDS("admiration_words.RDS")
