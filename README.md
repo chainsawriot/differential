@@ -57,6 +57,8 @@ structure(list(publication = "bild", title = "Aue-Stürmer eiskalt - Nazarov jag
     ##   <chr>       <chr>                                 <chr>   <date>         <int>
     ## 1 bild        Aue-Stürmer eiskalt - Nazarov jagt E… "Aue s… 2017-04-10        20
 
+`aid` is the unique identifier of an article.
+
 The tokenized version of `incl_articles.RDS` is `setences_tibble.RDS`.
 The structure of a row of data in `sentences_tibble.RDS`, as output by
 `dput`, looks like this:
@@ -96,6 +98,9 @@ structure(list(doc_id = "12", sentence_id = 1L, token_id = 1L,
 
     ##   doc_id sentence_id token_id token   pos head_token_id dep_rel entity
     ## 1     12           1        1 Erler PROPN             2      sb  PER_B
+
+`doc_id` in this case, is not the same as `aid`. Instead, it is a unique
+identifier of a sentence (`sid`, generated in `06_sent.R`).
 
 ## Reproduce the analyses
 
