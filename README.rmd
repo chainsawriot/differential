@@ -68,6 +68,63 @@ structure(list(doc_id = "12", sentence_id = 1L, token_id = 1L,
 "data.frame"))
 ```
 
-Because of these copyright issues, one can't run `00_prep.R`, `01_fcm.R`, `05_sent.R`, `06_parse.R`, `07b_example.R`, `08_explicit.R`.
+## Reproduce the analyses
+
+Because of these copyright issues, several files can't be run (see below). `02_combine.R` is not very important because it is for combining multiple `fcm` objects generated from `01_fcm.R`.
+
+It is better to start from `03_train.R`.
+
+### R Files
+
+Main analyses in the paper
+
+| File prefix | Purpose                                                                                                         | Runnable without the raw data? |
+|-------------|-----------------------------------------------------------------------------------------------------------------|--------------------------------|
+| `00`        | Select the relevant articles, calculate term frequency for each outlet                                          | No                             |
+| `01`        | Calculate the total term frequency of all outlets, generate Frequency-Cooccurrence Matrix (FCM) for each outlet | No                             |
+| `02`        | Combine all FCMs                                                                                                | No                             |
+| `03`        | Train GLOVE embeddings                                                                                          | Yes                            |
+| `04`        | Generation of fear and admiration wordlists                                                                     | Yes                            |
+| `05`        | Sentence Tokenization                                                                                           | No                             |
+| `06`        | Parse the sentences with spacyr                                                                                 | No                             |
+| `07`        | Train the Latent Semantic Scaling (LSS) model                                                                   | Yes                            |
+| `07a`       | Validate the LSS model                                                                                          | Yes                            |
+| `07b`       | Extract examples of sentences based on their LSS scores                                                         | No                             |
+| `08`        | Calculate LSS scores of sentences and group labels                                                              | No                             |
+| `08a`       | Bayesian modeling based on sentence-level LSS scores                                                            | Yes                            |
+| `09`        | Bayesian modeling based on group-level LSS scores                                                               | Yes                            |
+| `10`        | Calculate Normalized Association Scores (NAS)                                                                   | Yes                            |
+| `11`        | Bayesian modeling based on NAS                                                                                  | Yes                            |
+| `12`        | Correlation between LSS scores and NAS (Figure 1)                                                               | Yes                            |
+
+Other analyses (incl. sensitivity analyses)
+
+| File prefix | Purpose                                                           | Runnable without the raw data? |
+|-------------|-------------------------------------------------------------------|--------------------------------|
+| `13`        | Calculate LSS and NAS of dual-group labels                        | No                             |
+| `14`        | Bayesian modeling of dual-group labels                            | Yes                            |
+| `15`        | Calculate LSS and NAS for H4 (Jews, Sinti, Roma)                  | No                             |
+| `15a`       | Visualize LSS and NAS for H4                                      | Yes                            |
+| `16`        | Sensitivity analysis related to the label `Polen`                 | Yes                            |
+| `17`        | Bias Silhouette Analysis (BSA) (Take a long time)                 | Yes                            |
+| `18`        | Visualize BSA                                                     | Yes                            |
+| `19`        | Bootstrap analysis of GLOVE (Take a long time; run with `run.sh`) | No                             |
+| `20`        | Bootstrap analysis of NAS                                         | No                             |
+| `21`        | Bootstrap analysis of Bayesian modeling                           | No                             |
+| `22`        | Simulated Missing data imputation                                 | Yes                            |
+| `22a`       | Frequency analysis                                                | Yes                            |
 
 ## Obtain the large data files
+
+Several intermediate files are too big to be shared here. Please obtain them from [osf](https://osf.io/hncx4/).
+
+One can also obtain them programmatically and put them into the `data` directory.
+
+```r
+require(osfr)
+osf_retrieve_node("https://osf.io/hncx4/") %>%
+    osf_ls_files(path = "data") %>%
+    osf_download(path = here::here("data"), conflicts = "overwrite",
+                 verbose = TRUE, progress = TRUE)
+```
+
