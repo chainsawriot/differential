@@ -15,6 +15,10 @@ matched_sent %>% convert(to = "data.frame") %>% as_tibble %>% filter(anymatch !=
 sent %>% filter(sid %in% matched_sid) -> target_sent
 saveRDS(target_sent, "target_sent.RDS")
 
+target_sent_score <- readRDS("target_sent.RDS") %>% select(aid, sid, publication) %>% mutate(sid = as.character(sid))
+
+saveRDS(target_sent_score, here::here("data", "target_sent_score.RDS"))
+
 require(spacyr)
 spacy_initialize(model = "de")
 

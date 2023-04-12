@@ -3,7 +3,7 @@ require(spacyr)
 require(tidyverse)
 require(quanteda)
 
-parsed_sentences_dfm <- readRDS("parsed_sentences.RDS") %>% filter(pos %in% c("ADJ", "ADV", "VERB")) %>% as.tokens %>% dfm(tolower = TRUE, remove = stopwords("de"), remove_punct = TRUE, remove_symbols = TRUE, remove_numbers = TRUE, remove_url = TRUE)
+parsed_sentences_dfm <- readRDS(here::here("data", "parsed_sentences.RDS")) %>% filter(pos %in% c("ADJ", "ADV", "VERB")) %>% as.tokens %>% dfm(tolower = TRUE, remove = stopwords("de"), remove_punct = TRUE, remove_symbols = TRUE, remove_numbers = TRUE, remove_url = TRUE)
 
 lss_fit <- readRDS(here::here("data", "admiration_model.RDS"))
 lss_score <- predict(lss_fit, parsed_sentences_dfm)
@@ -44,9 +44,11 @@ indie_vars <- terms %>% select(2, c(6:9), 15)
 colnames(indie_vars) <- c("country", "group_size", "group_size_f", "muslim", "gdppc", "distance")
 indie_vars %>% filter(!is.na(country)) -> indie_vars
 
-target_sent <- readRDS("target_sent.RDS") %>% select(aid, sid, publication) %>% mutate(sid = as.character(sid))
+##target_sent <- readRDS("target_sent.RDS") %>% select(aid, sid, publication) %>% mutate(sid = as.character(sid))
 
-sent_match %>% pivot_longer(-doc_id, names_to = "country", values_to = "freq") %>% filter(freq != 0) %>% select(-freq) %>% left_join(score_df, by = c("doc_id" = "sid")) %>% left_join(indie_vars, by = "country") %>% rename("sid" = "doc_id") %>% left_join(target_sent, by = "sid") -> whole_data
+target_sent_score <- readRDS(here::here("data", "target_sent_score.RDS"))
+
+sent_match %>% pivot_longer(-doc_id, names_to = "country", values_to = "freq") %>% filter(freq != 0) %>% select(-freq) %>% left_join(score_df, by = c("doc_id" = "sid")) %>% left_join(indie_vars, by = "country") %>% rename("sid" = "doc_id") %>% left_join(target_sent_score, by = "sid") -> whole_data
 
 saveRDS(whole_data, "whole_data.RDS")
 
