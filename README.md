@@ -158,3 +158,21 @@ osf_retrieve_node("https://osf.io/hncx4/") %>%
     osf_download(path = here::here("data"), conflicts = "overwrite",
                  verbose = TRUE, progress = TRUE)
 ```
+
+## Dependencies
+
+Most of the packages can be obtained from CRAN, except
+[verbformen](https://github.com/chainsawriot/verbformen).
+
+``` r
+pkgs <- c("here", "Matrix", "quanteda", "quanteda.textstats", "tidyverse", 
+"fs", "text2vec", "rio", "tibble", "spacyr", "LSX", 
+"brms", "parameters", "performance", "sweater", "ggrepel", "furrr", 
+"purrr", "mice", "udpipe", "writexl", "rmarkdown", "rmdformats", 
+"kableExtra", "plotly", "knitr", "bayestestR", "remotes")
+install.packages(pkgs)
+remotes::install_github("chainsawriot/verbformen")
+
+require(spacyr)
+spacy_install()
+```
